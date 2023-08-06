@@ -2,59 +2,56 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class TransformsService {
-  shiftFunc(x: number[], Os: number[]): number[] {
-    const xShift = [];
-    for (let i = 0; i < x.length; i++) {
+  shiftFunc(x: number[], xShift: number[], nx: number, Os: number[]) {
+    for (let i = 0; i < nx; i++) {
       xShift[i] = x[i] - Os[i];
     }
-    return xShift;
   }
 
-  rotateFunc(x: number[], Mr: number[][]): number[] {
-    const xRot = new Array(x.length).fill(0);
-    for (let i = 0; i < x.length; i++) {
-      for (let j = 0; j < x.length; j++) {
-        xRot[i] += x[j] * Mr[i][j];
+  rotateFunc(x: number[], xRot: number[], nx: number, Mr: number[]) {
+    for (let i = 0; i < nx; i++) {
+      xRot[i] = 0;
+      for (let j = 0; j < nx; j++) {
+        xRot[i] += x[j] * Mr[i * nx + j];
       }
     }
-    return xRot;
   }
 
   srFunc(
     x: number[],
+    srX: number[],
+    nx: number,
     Os: number[],
-    Mr: number[][],
-    sh_rate: number,
-    s_flag: number,
-    r_flag: number,
-  ): number[] {
-    let sr_x = [];
-    let y = [];
-    if (s_flag === 1) {
-      if (r_flag === 1) {
-        y = this.shiftFunc(x, Os);
-        for (let i = 0; i < x.length; i++) {
-          y[i] *= sh_rate;
+    Mr: number[],
+    shRate: number,
+    sFlag: number,
+    rFlag: number,
+  ) {
+    const y = [];
+    if (sFlag === 1) {
+      if (rFlag === 1) {
+        this.shiftFunc(x, y, nx, Os);
+        for (let i = 0; i < nx; i++) {
+          y[i] *= shRate;
         }
-        sr_x = this.rotateFunc(y, Mr);
+        this.rotateFunc(y, srX, nx, Mr);
       } else {
-        sr_x = this.shiftFunc(x, Os);
-        for (let i = 0; i < x.length; i++) {
-          sr_x[i] *= sh_rate;
+        this.shiftFunc(x, srX, nx, Os);
+        for (let i = 0; i < nx; i++) {
+          srX[i] *= shRate;
         }
       }
     } else {
-      if (r_flag === 1) {
-        for (let i = 0; i < x.length; i++) {
-          y[i] = x[i] * sh_rate;
+      if (rFlag === 1) {
+        for (let i = 0; i < nx; i++) {
+          y[i] = x[i] * shRate;
         }
-        sr_x = this.rotateFunc(y, Mr);
+        this.rotateFunc(y, srX, nx, Mr);
       } else {
-        for (let i = 0; i < x.length; i++) {
-          sr_x[i] = x[i] * sh_rate;
+        for (let i = 0; i < nx; i++) {
+          srX[i] = x[i] * shRate;
         }
       }
     }
-    return sr_x;
   }
 }
