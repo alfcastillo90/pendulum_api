@@ -31,4 +31,8 @@ export class ResultService {
 
     return result.save();
   }
+
+  async findAll(): Promise<Result[]> {
+    return this.resultModel.find().exec();
+  }
 }
