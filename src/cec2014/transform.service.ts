@@ -34,13 +34,13 @@ export class TransformsService {
       if (r_flag === 1) {
         y = this.shiftFunc(x, Os);
         for (let i = 0; i < x.length; i++) {
-          y[i] = y[i] * sh_rate;
+          y[i] *= sh_rate;
         }
         sr_x = this.rotateFunc(y, Mr);
       } else {
         sr_x = this.shiftFunc(x, Os);
         for (let i = 0; i < x.length; i++) {
-          sr_x[i] = sr_x[i] * sh_rate;
+          sr_x[i] *= sh_rate;
         }
       }
     } else {
