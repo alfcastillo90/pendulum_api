@@ -21,6 +21,21 @@ export class PsaService {
     this.ub = 100;
   }
 
+  // Nuevo método para actualizar los parámetros de la búsqueda del péndulo
+  public setParameters(
+    dim: number,
+    ps: number,
+    maxIteration: number,
+    lb: number,
+    ub: number,
+  ) {
+    this.dim = dim;
+    this.ps = ps;
+    this.maxIteration = maxIteration;
+    this.lb = lb;
+    this.ub = ub;
+  }
+
   // Método para inicializar la población dentro de los límites lb y ub
   private initialization(): number {
     return this.lb + Math.random() * (this.ub - this.lb);
