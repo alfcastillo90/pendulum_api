@@ -20,7 +20,7 @@ export class TransformsService {
     return xRot;
   }
 
-  sr_func(
+  srFunc(
     x: number[],
     Os: number[],
     Mr: number[][],
