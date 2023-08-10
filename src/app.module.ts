@@ -9,7 +9,6 @@ import { ResultModule } from './result/result.module';
     Cec2014Module,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `.env.dev`,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
