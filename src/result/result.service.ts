@@ -14,19 +14,27 @@ export class ResultService {
   ) {}
 
   async create(createResultDto: CreateResultDto): Promise<Result> {
-    const { dim, ps, maxIteration, lb, ub } = createResultDto;
-    this.psaService.setParameters(dim, ps, maxIteration, lb, ub);
-    const [bestFit, bestPos, cgCurve] = this.psaService.psaV2Func();
+    const { agents, maxIteration } = createResultDto;
+    this.psaService.setParameters(agents, maxIteration);
+    const {
+      bestFitness,
+      bestPosition,
+      bestSolution,
+      initialSolution,
+      solutions,
+    } = this.psaService.psaV2Func();
 
     const result = new this.resultModel({
-      dim,
-      ps,
+      dimensions: this.psaService.dimensions,
+      agents,
       maxIteration,
-      lb,
-      ub,
-      bestFit,
-      bestPos,
-      cgCurve,
+      lowerBound: this.psaService.lowerBoundary,
+      upperBound: this.psaService.upperBoundary,
+      bestFit: bestFitness,
+      bestPos: bestPosition,
+      bestSolution,
+      initialSolution,
+      solutions,
     });
 
     return result.save();

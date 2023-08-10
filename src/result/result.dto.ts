@@ -2,25 +2,13 @@ import { IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateResultDto {
-  @ApiProperty({ description: 'Dimension of the problem', default: 2 })
+  @ApiProperty({ description: 'Population size', default: 4 })
   @IsNumber()
-  dim: number;
+  agents: number;
 
-  @ApiProperty({ description: 'Population size', default: 20 })
-  @IsNumber()
-  ps: number;
-
-  @ApiProperty({ description: 'Max iterations', default: 1000 })
+  @ApiProperty({ description: 'Max iterations', default: 100 })
   @IsNumber()
   maxIteration: number;
-
-  @ApiProperty({ description: 'Lower bound', default: -100 })
-  @IsNumber()
-  lb: number;
-
-  @ApiProperty({ description: 'Upper bound', default: 100 })
-  @IsNumber()
-  ub: number;
 }
 
 export class GetResultDto {

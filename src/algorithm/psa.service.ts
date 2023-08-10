@@ -1,76 +1,108 @@
 import { Injectable } from '@nestjs/common';
+import { Solution } from 'src/schemas/result.schema';
 
 @Injectable()
 export class PsaService {
   // Definición de propiedades
-  private fobj: (x: number[]) => number;
-  private dim: number;
-  private ps: number;
+  private objectiveFunction: (x: number[]) => number;
+  public dimensions: number;
+  private agents: number;
   private maxIteration: number;
-  private lb: number;
-  private ub: number;
+  public lowerBoundary: number;
+  public upperBoundary: number;
 
   constructor() {
     // Inicializar las variables según la función objetivo y los parámetros requeridos
     // Estos valores de ejemplo se pueden modificar según tu necesidad
-    this.fobj = (x) => Math.pow(x[0], 2) + Math.pow(x[1], 2); // Ejemplo de función objetivo
-    this.dim = 2;
-    this.ps = 20;
-    this.maxIteration = 1000;
-    this.lb = -100;
-    this.ub = 100;
+    this.objectiveFunction = (x) =>
+      Math.pow(x[0], 2) + Math.pow(x[1], 2) + Math.pow(x[2], 2);
+
+    this.dimensions = 3;
+    this.agents = 4;
+    this.maxIteration = 100;
+    this.lowerBoundary = -100;
+    this.upperBoundary = 100;
   }
 
   // Nuevo método para actualizar los parámetros de la búsqueda del péndulo
-  public setParameters(
-    dim: number,
-    ps: number,
-    maxIteration: number,
-    lb: number,
-    ub: number,
-  ) {
-    this.dim = dim;
-    this.ps = ps;
+  public setParameters(agents: number, maxIteration: number) {
+    this.agents = agents;
     this.maxIteration = maxIteration;
-    this.lb = lb;
-    this.ub = ub;
   }
 
   // Método para inicializar la población dentro de los límites lb y ub
   private initialization(): number {
-    return this.lb + Math.random() * (this.ub - this.lb);
+    return (
+      this.lowerBoundary +
+      Math.random() * (this.upperBoundary - this.lowerBoundary)
+    );
+  }
+
+  private initializeMatrix(agents, dim, lb, ub) {
+    const X = [];
+
+    for (let i = 0; i < agents; i++) {
+      const row = [];
+
+      for (let j = 0; j < dim; j++) {
+        const randomValue = lb + (ub - lb) * Math.random();
+        row.push(randomValue);
+      }
+
+      X.push(row);
+    }
+
+    return X;
   }
 
   // Implementación de la función Pendulum Search Algorithm
-  public psaV2Func(): [number, number[], number[]] {
+  public psaV2Func(): {
+    bestFitness;
+    bestPosition;
+    cgCurve;
+    initialSolution;
+    bestSolution;
+    solutions;
+  } {
+    const solutions = [];
     // Inicializar X con valores aleatorios dentro de los límites
-    const X = Array.from({ length: this.ps }, () =>
-      Array.from({ length: this.dim }, () => this.initialization()),
+    const positions = this.initializeMatrix(
+      this.agents,
+      this.dimensions,
+      this.lowerBoundary,
+      this.upperBoundary,
     );
 
     // Calcular el fitness inicial para cada posición
-    let fit = X.map((x) => this.fobj(x));
+    let fitness = positions.map((x) => {
+      return this.objectiveFunction(x);
+    });
 
     // Inicializar el mejor fitness y la mejor posición
-    let xBest = [...X[0]];
-    let bestFit = fit[0];
-
+    let bestPosition = [...positions[0]];
+    let bestFitness = fitness[0];
     // Guardar el mejor fitness en la curva cg
-    const cgCurve = [bestFit];
-
+    const cgCurve = [bestFitness];
+    const initialSolution: any[] = [];
     // Encontrar el mejor fitness y la mejor posición en la población inicial
-    for (let i = 1; i < this.ps; i++) {
-      if (fit[i] < bestFit) {
-        xBest = [...X[i]];
-        bestFit = fit[i];
+    for (let i = 0; i < this.agents; i++) {
+      if (fitness[i] < bestFitness) {
+        bestPosition = [...positions[i]];
+        bestFitness = fitness[i];
       }
     }
 
+    initialSolution.push({
+      positions: JSON.parse(JSON.stringify(positions)),
+      fitness,
+    });
+
     // Bucle de iteraciones
-    for (let i = 1; i < this.maxIteration; i++) {
-      // Actualizar cada posición
-      for (let p = 0; p < this.ps; p++) {
-        for (let d = 0; d < this.dim; d++) {
+    for (let i = 0; i < this.maxIteration; i++) {
+      // Bucle de soluciones
+      for (let p = 0; p < this.agents; p++) {
+        // Bucle de dimensiones
+        for (let d = 0; d < this.dimensions; d++) {
           // Calcular el valor pend
           const pend =
             2 *
@@ -78,31 +110,56 @@ export class PsaService {
             Math.cos(2 * Math.PI * Math.random());
 
           // Actualizar la posición
-          X[p][d] += pend * (xBest[d] - X[p][d]);
+          positions[p][d] += pend * (bestPosition[d] - positions[p][d]);
 
           // Si la posición está fuera de los límites, inicializar de nuevo
-          if (X[p][d] > this.ub || X[p][d] < this.lb) {
-            X[p][d] = this.initialization();
-          }
+          /* if (
+            positions[p][d] > this.upperBoundary ||
+            positions[p][d] < this.lowerBoundary
+          ) {
+            positions[p][d] = this.initialization();
+          } */
+          // validamos las restricciones
+          positions[p][d] =
+            positions[p][d] > this.upperBoundary
+              ? this.upperBoundary
+              : positions[p][d];
+          positions[p][d] =
+            positions[p][d] < this.lowerBoundary
+              ? this.lowerBoundary
+              : positions[p][d];
         }
       }
 
       // Calcular el nuevo fitness
-      fit = X.map((x) => this.fobj(x));
+      fitness = positions.map((x) => this.objectiveFunction(x));
+      const currentPositions = JSON.parse(JSON.stringify(positions));
+      const currentFitness = JSON.parse(JSON.stringify(fitness));
 
+      solutions.push({ positions: currentPositions, fitness: currentFitness });
       // Encontrar el mejor fitness y la mejor posición
-      for (let p = 0; p < this.ps; p++) {
-        if (fit[p] < bestFit) {
-          xBest = [...X[p]];
-          bestFit = fit[p];
+      for (let p = 0; p < this.agents; p++) {
+        if (fitness[p] < bestFitness) {
+          bestPosition = [...positions[p]];
+          bestFitness = fitness[p];
         }
       }
 
       // Guardar el mejor fitness en la curva cg
-      cgCurve.push(bestFit);
+      cgCurve.push(bestFitness);
     }
+    const bestSolution: Solution = {
+      positions: bestPosition,
+      fitness: bestFitness,
+    };
 
-    // Devolver el mejor fitness, la mejor posición y la curva cg
-    return [bestFit, xBest, cgCurve];
+    return {
+      bestFitness,
+      bestPosition,
+      cgCurve,
+      initialSolution,
+      bestSolution,
+      solutions,
+    };
   }
 }
