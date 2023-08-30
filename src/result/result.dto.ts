@@ -1,6 +1,18 @@
-import { IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsNumber,
+  IsArray,
+  ArrayNotEmpty,
+  ValidateNested,
+  IsInt,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { Solution } from 'src/schemas/result.schema';
+
+class NumberArray {
+  @IsInt()
+  eachNumber: number;
+}
 
 export class CreateResultDto {
   @ApiProperty({ description: 'Population size', default: 4 })
@@ -10,8 +22,26 @@ export class CreateResultDto {
   @ApiProperty({ description: 'Max iterations', default: 100 })
   @IsNumber()
   maxIteration: number;
-}
 
+  @ApiProperty({
+    description: 'Cost associated with each set',
+    type: [Number],
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  cost: number[];
+
+  @ApiProperty({
+    description: 'Matrix describing which elements are covered by each set',
+    type: [[Number]],
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => NumberArray)
+  coverageMatrix: number[][];
+}
 export class GetResultDto {
   dimensions: number;
   agents: number;

@@ -14,8 +14,8 @@ export class ResultService {
   ) {}
 
   async create(createResultDto: CreateResultDto): Promise<Result> {
-    const { agents, maxIteration } = createResultDto;
-    this.psaService.setParameters(agents, maxIteration);
+    const { agents, maxIteration, cost, coverageMatrix } = createResultDto;
+    this.psaService.setParameters(agents, maxIteration, cost, coverageMatrix);
     const {
       bestFitness,
       bestPosition,
