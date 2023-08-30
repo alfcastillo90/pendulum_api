@@ -30,16 +30,8 @@ export class PsaService {
     this.maxIteration = maxIteration;
   }
 
-  // Método para inicializar la población dentro de los límites lb y ub
-  private initialization(): number {
-    return (
-      this.lowerBoundary +
-      Math.random() * (this.upperBoundary - this.lowerBoundary)
-    );
-  }
-
   private initializeMatrix(agents, dim, lb, ub) {
-    const X = [];
+    const matrix = [];
 
     for (let i = 0; i < agents; i++) {
       const row = [];
@@ -49,10 +41,10 @@ export class PsaService {
         row.push(randomValue);
       }
 
-      X.push(row);
+      matrix.push(row);
     }
 
-    return X;
+    return matrix;
   }
 
   // Implementación de la función Pendulum Search Algorithm
@@ -82,7 +74,7 @@ export class PsaService {
     let bestPosition = [...positions[0]];
     let bestFitness = fitness[0];
     // Guardar el mejor fitness en la curva cg
-    const cgCurve = [bestFitness];
+    const cgCurve = [];
     const initialSolution: any[] = [];
     // Encontrar el mejor fitness y la mejor posición en la población inicial
     for (let i = 0; i < this.agents; i++) {
@@ -113,12 +105,6 @@ export class PsaService {
           positions[p][d] += pend * (bestPosition[d] - positions[p][d]);
 
           // Si la posición está fuera de los límites, inicializar de nuevo
-          /* if (
-            positions[p][d] > this.upperBoundary ||
-            positions[p][d] < this.lowerBoundary
-          ) {
-            positions[p][d] = this.initialization();
-          } */
           // validamos las restricciones
           positions[p][d] =
             positions[p][d] > this.upperBoundary
@@ -144,9 +130,6 @@ export class PsaService {
           bestFitness = fitness[p];
         }
       }
-
-      // Guardar el mejor fitness en la curva cg
-      cgCurve.push(bestFitness);
     }
     const bestSolution: Solution = {
       positions: bestPosition,
