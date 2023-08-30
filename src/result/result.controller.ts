@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { CreateResultDto, GetResultDto } from './result.dto';
 import { Result } from '../schemas/result.schema';
@@ -29,5 +29,20 @@ export class ResultController {
   @Get()
   async findAll(): Promise<Result[]> {
     return this.resultService.findAll();
+  }
+
+  @ApiOperation({ summary: 'Obtener un resultado por ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Recuperado con éxito el resultado.',
+    type: GetResultDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resultado no encontrado.',
+  })
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<Result> {
+    return this.resultService.findById(id);
   }
 }

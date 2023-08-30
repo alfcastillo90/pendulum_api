@@ -43,4 +43,8 @@ export class ResultService {
   async findAll(): Promise<Result[]> {
     return this.resultModel.find().exec();
   }
+
+  async findById(id: string): Promise<Result | null> {
+    return this.resultModel.findById(id).exec();
+  }
 }
