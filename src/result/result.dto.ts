@@ -1,5 +1,6 @@
 import { IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Solution } from 'src/schemas/result.schema';
 
 export class CreateResultDto {
   @ApiProperty({ description: 'Population size', default: 4 })
@@ -12,15 +13,14 @@ export class CreateResultDto {
 }
 
 export class GetResultDto {
-  @ApiProperty()
-  id: string;
-
-  @ApiProperty()
-  bestFitness: number;
-
-  @ApiProperty({ type: [Number] })
-  bestPosition: number[];
-
-  @ApiProperty({ type: [Number] })
-  cgCurve: number[];
+  dimensions: number;
+  agents: number;
+  maxIteration: number;
+  lowerBound: number;
+  upperBound: number;
+  bestFit: number;
+  bestPos: number[];
+  initialSolution: Solution[];
+  solutions: Array<any>;
+  bestSolution: Solution;
 }
