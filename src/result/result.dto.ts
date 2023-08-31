@@ -29,7 +29,6 @@ export class CreateResultDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @ValidateNested({ each: true })
   cost: number[];
 
   @ApiProperty({
@@ -38,8 +37,6 @@ export class CreateResultDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => NumberArray)
   coverageMatrix: number[][];
 }
 export class GetResultDto {
