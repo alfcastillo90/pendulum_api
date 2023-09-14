@@ -4,25 +4,30 @@ import { Solution } from 'src/schemas/result.schema';
 @Injectable()
 export class PsaService {
   // Definición de propiedades
-  private agents: number;
-  private cost: number[];
-  private isCovered: number[][];
-  private maxIteration: number;
   private objectiveFunction: (x: number[]) => number;
-
   public dimensions: number;
+  private agents: number;
+  private maxIteration: number;
   public lowerBoundary: number;
   public upperBoundary: number;
 
   constructor() {
     // Inicializar las variables según la función objetivo y los parámetros requeridos
     // Estos valores de ejemplo se pueden modificar según tu necesidad
-    this.setObjectiveFunction();
-    this.dimensions = 2;
+    this.objectiveFunction = (x) =>
+      Math.pow(x[0], 2) + Math.pow(x[1], 2) + Math.pow(x[2], 2);
+
+    this.dimensions = 3;
     this.agents = 4;
     this.maxIteration = 100;
-    this.lowerBoundary = 0;
-    this.upperBoundary = 1;
+    this.lowerBoundary = -100;
+    this.upperBoundary = 100;
+  }
+
+  // Nuevo método para actualizar los parámetros de la búsqueda del péndulo
+  public setParameters(agents: number, maxIteration: number) {
+    this.agents = agents;
+    this.maxIteration = maxIteration;
   }
 
   private initializeMatrix(agents, dim, lb, ub) {
@@ -40,44 +45,6 @@ export class PsaService {
     }
 
     return matrix;
-  }
-
-  // Define la función objetivo para Set Covering
-  private setObjectiveFunction(): void {
-    this.objectiveFunction = (x: number[]) => {
-      let totalCost = 0;
-      const covered = new Set<number>();
-      for (let i = 0; i < x.length; i++) {
-        if (x[i] > 0.5) {
-          // Si el conjunto i es seleccionado en la solución
-          totalCost += this.cost[i];
-          for (let j = 0; j < this.isCovered[i].length; j++) {
-            if (this.isCovered[i][j] === 1) {
-              covered.add(j);
-            }
-          }
-        }
-      }
-      // Añadir una penalización si no todos los elementos son cubiertos
-      if (covered.size !== this.isCovered[0].length) {
-        totalCost += 1000 * (this.isCovered[0].length - covered.size);
-      }
-      return totalCost;
-    };
-  }
-
-  // Nuevo método para actualizar los parámetros de la búsqueda del péndulo
-  public setParameters(
-    agents: number,
-    maxIteration: number,
-    cost: number[],
-    isCovered: number[][],
-  ): void {
-    this.agents = agents;
-    this.cost = cost;
-    this.isCovered = isCovered;
-    this.maxIteration = maxIteration;
-    this.dimensions = cost.length;
   }
 
   // Implementación de la función Pendulum Search Algorithm
