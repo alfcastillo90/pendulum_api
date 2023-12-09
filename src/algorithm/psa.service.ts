@@ -1,6 +1,9 @@
+/* eslint-disable no-var */
 import { Injectable } from '@nestjs/common';
 import { Solution } from 'src/schemas/result.schema';
-
+import { Random } from 'random-js';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+var nj = require('numjs');
 @Injectable()
 export class PsaService {
   // Definición de propiedades
@@ -10,6 +13,7 @@ export class PsaService {
   private maxIteration: number;
   public lowerBoundary: number;
   public upperBoundary: number;
+  private random = new Random();
 
   constructor() {
     // Inicializar las variables según la función objetivo y los parámetros requeridos
@@ -144,5 +148,19 @@ export class PsaService {
       bestSolution,
       solutions,
     };
+  }
+
+  public psaV3Func(maximaIteracion, t, dimension, poblacion, mejorSolucion) {
+    for (let i = 0; i < poblacion.length; i++) {
+      for (let j = 0; j < dimension; j++) {
+        const rand = this.random.real(0, 1);
+        const pend =
+          2 * Math.exp(-t / maximaIteracion) * Math.cos(2 * Math.PI * rand);
+        poblacion[i][j] =
+          poblacion[i][j] + pend * (mejorSolucion[j] - poblacion[i][j]);
+      }
+    }
+
+    return nj.array(poblacion);
   }
 }
