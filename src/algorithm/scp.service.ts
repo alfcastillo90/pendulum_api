@@ -1,8 +1,11 @@
 import nj from 'numjs';
 import * as fs from 'fs';
 import * as path from 'path';
-import { order } from './order';
+import { order } from '../functions/order';
 import { Random } from 'random-js';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
 export class ScpService {
   private rows: number;
   private columns: number;
@@ -10,12 +13,13 @@ export class ScpService {
   private cost: number[];
   private optimum: number;
 
-  constructor() {
+  constructor(instance) {
     this.rows = 0;
     this.columns = 0;
     this.coverage = nj.array([]);
     this.cost = nj.array([]);
     this.optimum = 0;
+    this.readInstance(instance);
   }
 
   getRows(): number {
