@@ -150,7 +150,7 @@ export class PsaService {
     };
   }
 
-  public psaV3Func(maximaIteracion, t, dimension, poblacion, mejorSolucion) {
+  public iterarPSA(maximaIteracion, t, dimension, poblacion, mejorSolucion) {
     for (let i = 0; i < poblacion.length; i++) {
       for (let j = 0; j < dimension; j++) {
         const rand = this.random.real(0, 1);
