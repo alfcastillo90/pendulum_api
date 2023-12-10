@@ -5,8 +5,10 @@ import { PorcentajesService } from './porcentajes.service';
 import { TransferAndBinarizationService } from './transfer-and-binarization.service';
 import { DiversidadService } from './diversidad-hussain.service';
 import { ScpSolverService } from './scp-solver.service';
+import { SolverScpController } from './solver-scp.controller';
 
 @Module({
+  controllers: [SolverScpController],
   providers: [
     DiversidadService,
     PsaService,
