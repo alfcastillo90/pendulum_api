@@ -1,4 +1,4 @@
-import nj from 'numjs';
+import * as nj from 'numjs';
 import * as fs from 'fs';
 import * as path from 'path';
 import { order } from '../functions/order';
@@ -13,13 +13,12 @@ export class ScpService {
   private cost: number[];
   private optimum: number;
 
-  constructor(instance) {
+  constructor() {
     this.rows = 0;
     this.columns = 0;
     this.coverage = nj.array([]);
     this.cost = nj.array([]);
     this.optimum = 0;
-    this.readInstance(instance);
   }
 
   getRows(): number {

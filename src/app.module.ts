@@ -3,6 +3,7 @@ import { Cec2014Module } from './cec2014/ cec2014.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ResultModule } from './result/result.module';
+import { AlgorithmModule } from './algorithm/algorithm.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ResultModule } from './result/result.module';
       inject: [ConfigService],
     }),
     ResultModule,
+    AlgorithmModule,
   ],
 })
 export class AppModule {}
